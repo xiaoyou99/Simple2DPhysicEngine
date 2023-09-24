@@ -5,12 +5,12 @@ import lombok.Getter;
 import org.simple.engine.world.BodyTypeEnum;
 
 /**
- * LinePic
+ * 画布上展示的线的信息
  *
  * @since 2023/09/24
  */
 @Getter
-public class LinePicAbstract extends AbstractBodyPic {
+public class LinePic extends AbstractBodyPic {
   private float startX;
 
   private float startY;
@@ -21,7 +21,7 @@ public class LinePicAbstract extends AbstractBodyPic {
 
   private Color color;
 
-  public LinePicAbstract(float startX, float startY, float endX, float endY) {
+  public LinePic(float startX, float startY, float endX, float endY) {
     super(BodyTypeEnum.LINE);
     this.startX = startX;
     this.startY = startY;

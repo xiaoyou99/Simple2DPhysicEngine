@@ -10,7 +10,7 @@ import org.simple.engine.world.BodyTypeEnum;
  * @since 2023/09/24
  */
 @Getter
-public class CirclePicAbstract extends AbstractBodyPic {
+public class CirclePic extends AbstractBodyPic {
   private float centerX;
 
   private float centerY;
@@ -19,7 +19,7 @@ public class CirclePicAbstract extends AbstractBodyPic {
 
   private Color color;
 
-  public CirclePicAbstract(float centerX, float centerY, float radius, int R, int G, int B) {
+  public CirclePic(float centerX, float centerY, float radius, int R, int G, int B) {
     super(BodyTypeEnum.CIRCLE);
     this.centerX = centerX;
     this.centerY = centerY;

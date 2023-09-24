@@ -1,6 +1,6 @@
 package org.simple.engine.display;
 
-import org.simple.engine.display.body.LinePicAbstract;
+import org.simple.engine.display.body.LinePic;
 import org.simple.engine.world.FlatVector;
 
 /**
@@ -11,7 +11,6 @@ import org.simple.engine.world.FlatVector;
 public class Camera {
   // 画布在y轴方向上的像素点个数
   private final int YSize;
-
 
   public Camera(int YSize) {
     this.YSize = YSize;
@@ -24,8 +23,8 @@ public class Camera {
    * @param vector 向量
    * @return LinePic
    */
-  public LinePicAbstract FlatVector2LinePic(FlatVector start, FlatVector vector) {
-    return new LinePicAbstract(start.x, transferY(start.y), start.x + vector.x,
+  public LinePic FlatVector2LinePic(FlatVector start, FlatVector vector) {
+    return new LinePic(start.x, transferY(start.y), start.x + vector.x,
         transferY(start.y) - vector.y);
   }
 

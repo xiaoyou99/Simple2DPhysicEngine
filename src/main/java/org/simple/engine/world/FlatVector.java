@@ -1,7 +1,7 @@
 package org.simple.engine.world;
 
 /**
- * class usage
+ * 平面向量类
  *
  * @since 2023/09/24
  */
