@@ -55,10 +55,13 @@ public class SimulationPanel extends JPanel {
     g2D.transform(yFlip);
     g2D.transform(move);
     g2D.transform(cameraMove);
-    System.out.println(1);
   }
 
   public void addSimulationBody(SimulationBody body) {
     this.simulationBodies.add(body);
+  }
+
+  public Camera getCamera() {
+    return this.camera;
   }
 }
