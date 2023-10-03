@@ -1,29 +1,38 @@
 package org.simple.engine;
 
-import java.util.Arrays;
-import org.simple.engine.display.Camera;
-import org.simple.engine.display.MyScreen;
-import org.simple.engine.display.WorldPanel;
-import org.simple.engine.display.body.LinePic;
-import org.simple.engine.world.FlatVector;
+import org.simple.engine.physics.FlatBody;
+import org.simple.engine.physics.FlatVector;
+import org.simple.engine.simulation.Camera;
+import org.simple.engine.simulation.RandomColorUtil;
+import org.simple.engine.simulation.SimulationFrame;
+import org.simple.engine.simulation.SimulationPanel;
+import org.simple.engine.simulation.body.SimulationBody;
 
 /**
  * 程序入口
  */
 public class App {
-  private MyScreen myScreen;
-
-  private WorldPanel worldPanel;
+  private SimulationFrame simulationFrame;
 
   public static void main(String[] args) {
     App app = new App();
-    app.myScreen = new MyScreen();
-    app.worldPanel = app.myScreen.getWorldPanel();
+    Camera camera = new Camera(50.0, 0, 0);
+    app.simulationFrame = new SimulationFrame(camera);
 
-    FlatVector test = new FlatVector(100f, 100f);
-    Camera camera = new Camera(app.worldPanel.getHeight());
-    LinePic linePic = camera.FlatVector2LinePic(FlatVector.Zero, test);
-    app.worldPanel.refresh(Arrays.asList(linePic));
-    app.worldPanel.repaint();
+    FlatVector position = new FlatVector(0d, 0d);
+    double radius = 1.2d;
+    FlatBody circleBody = FlatBody.createCircleBody(position, 11d, 0.2d, false, radius);
+    SimulationBody bigCircle = new SimulationBody(RandomColorUtil.getRandomColor(), circleBody);
+
+    FlatVector position2 = new FlatVector(0.5d, 0.5d);
+    double radius2 = 0.2d;
+    FlatBody circleBody2 = FlatBody.createCircleBody(position2, 11d, 0.2d, false, radius2);
+    SimulationBody smallCircle = new SimulationBody(RandomColorUtil.getRandomColor(), circleBody2);
+
+    SimulationPanel simulationPanel = app.simulationFrame.getSimulationPanel();
+    simulationPanel.addSimulationBody(bigCircle);
+    simulationPanel.addSimulationBody(smallCircle);
+
+    simulationPanel.repaint();
   }
 }

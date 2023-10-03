@@ -1,4 +1,4 @@
-package org.simple.engine.world;
+package org.simple.engine.physics;
 
 /**
  * 刚体类型枚举
@@ -7,7 +7,8 @@ package org.simple.engine.world;
  */
 public enum BodyTypeEnum {
   CIRCLE(1),
-  LINE(2);
+  BOX(2),
+  POLYGON(3);
 
   private Integer code;
 
@@ -15,4 +16,7 @@ public enum BodyTypeEnum {
     this.code = code;
   }
 
+  public Integer getCode() {
+    return code;
+  }
 }

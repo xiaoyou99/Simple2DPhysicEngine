@@ -1,4 +1,4 @@
-package org.simple.engine.display;
+package org.simple.engine.simulation;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -11,7 +11,7 @@ import lombok.Getter;
  * @since 2023/09/24
  */
 @Getter
-public class MyScreen extends JFrame {
+public class SimulationFrame extends JFrame {
 
   private static final int SCREEN_WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize()
       .getWidth();
@@ -19,16 +19,16 @@ public class MyScreen extends JFrame {
   private static final int FRAME_HEIGHT = FRAME_WIDTH * 2 / 3;
 
   // 画布
-  private final WorldPanel worldPanel;
+  private final SimulationPanel simulationPanel;
 
-  public MyScreen() {
+  public SimulationFrame(Camera camera) {
     setTitle("2D Engine Demo");
     setSize(FRAME_WIDTH, FRAME_HEIGHT);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     // panel
-    worldPanel = new WorldPanel();
-    getContentPane().add(worldPanel);
+    simulationPanel = new SimulationPanel(camera);
+    getContentPane().add(simulationPanel);
 
     pack();
     setVisible(true);
