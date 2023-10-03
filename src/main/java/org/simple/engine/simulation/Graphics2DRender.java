@@ -2,7 +2,8 @@ package org.simple.engine.simulation;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D.Double;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import org.simple.engine.physics.FlatBody;
 import org.simple.engine.physics.FlatVector;
 import org.simple.engine.simulation.body.SimulationBody;
@@ -20,7 +21,8 @@ public class Graphics2DRender {
         renderCircle(g2d, simulationBody.getFlatBody(), simulationBody.getColor(), camera);
         break;
       case BOX:
-        throw new RuntimeException("box not suupor now");
+        renderBox(g2d, simulationBody.getFlatBody(), simulationBody.getColor(), camera);
+        break;
       case POLYGON:
         throw new RuntimeException("polygon not suupor now");
     }
@@ -30,12 +32,25 @@ public class Graphics2DRender {
     // 画圆形
     FlatVector position = flatBody.getPosition();
     double radius = flatBody.radius;
-    Double circle = new Double((position.x - radius) * camera.scale,
+    Ellipse2D.Double circle = new Ellipse2D.Double((position.x - radius) * camera.scale,
         (position.y - radius) * camera.scale, (2 * radius) * camera.scale,
         (2 * radius) * camera.scale);
     g2d.setColor(color);
     g2d.fill(circle);
     g2d.setColor(Color.WHITE);
     g2d.draw(circle);
+  }
+
+  private static void renderBox(Graphics2D g2d, FlatBody flatBody, Color color, Camera camera) {
+    FlatVector position = flatBody.getPosition();
+    double width = flatBody.width;
+    double height = flatBody.height;
+    Rectangle2D.Double rectangle = new Rectangle2D.Double((position.x - width / 2) * camera.scale,
+        (position.y - height / 2) * camera.scale, width * camera.scale,
+        height * camera.scale);
+    g2d.setColor(color);
+    g2d.fill(rectangle);
+    g2d.setColor(Color.WHITE);
+    g2d.draw(rectangle);
   }
 }

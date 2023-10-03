@@ -2,12 +2,14 @@ package org.simple.engine.physics;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * RealWorld
  *
  * @since 2023/09/24
  */
+@Getter
 public class FlatWorld {
   // 属性: 刚体列表
   private List<FlatBody> bodies;
@@ -23,13 +25,6 @@ public class FlatWorld {
 
   public FlatWorld() {
     this.bodies = new ArrayList<>();
-    this.timeStep = new TimeStep(Settings.DEFAULT_PERIOD);
-    this.settings = new Settings();
-    this.time = 0.0d;
-  }
-
-  public FlatWorld(List<FlatBody> bodies) {
-    this.bodies = bodies;
     this.timeStep = new TimeStep(Settings.DEFAULT_PERIOD);
     this.settings = new Settings();
     this.time = 0.0d;
@@ -63,7 +58,7 @@ public class FlatWorld {
 
 
   private void step() {
-    // 每一步前进0.02m
+    // todo: 这里是测试代码 每一步前进0.02m
     for(FlatBody body : bodies) {
       FlatVector position = body.getPosition();
       body.setPosition(position.add(new FlatVector(0.02d, 0.0d)));
