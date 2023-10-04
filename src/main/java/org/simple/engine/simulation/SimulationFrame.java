@@ -4,7 +4,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 import lombok.Getter;
+import org.simple.engine.physics.FlatVector;
 import org.simple.engine.physics.FlatWorld;
+import org.simple.engine.simulation.input.MousePanningInputHandler;
+import org.simple.engine.simulation.input.ZoomInputHandler;
 
 /**
  * 代表屏幕中，整个应用的窗口
@@ -13,13 +16,11 @@ import org.simple.engine.physics.FlatWorld;
  */
 @Getter
 public class SimulationFrame extends JFrame {
-
   private static final int SCREEN_WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize()
       .getWidth();
   private static final int FRAME_WIDTH = SCREEN_WIDTH * 3 / 4;
   private static final int FRAME_HEIGHT = FRAME_WIDTH * 2 / 3;
-
-  private static final double NANO_TO_BASE = 1.0E-9;
+  private static final double NANO_TO_BASE = 1.0E9;
 
   // 画布
   private final SimulationPanel simulationPanel;
@@ -29,6 +30,10 @@ public class SimulationFrame extends JFrame {
 
   // 上次step的time
   private long lastNanoTime;
+
+  // 事件处理器
+  private final ZoomInputHandler zoomInputHandler;
+  private final MousePanningInputHandler mousePanningInputHandler;
 
   public SimulationFrame(Camera camera, FlatWorld flatWorld) {
     // 初始化panel
@@ -43,6 +48,12 @@ public class SimulationFrame extends JFrame {
     setLocationRelativeTo(null);
     pack();
     setVisible(true);
+    // 事件处理器初始化
+    zoomInputHandler = new ZoomInputHandler(simulationPanel);
+    zoomInputHandler.install();
+    mousePanningInputHandler = new MousePanningInputHandler(simulationPanel);
+    mousePanningInputHandler.install();
+
   }
 
   @Override
@@ -71,6 +82,7 @@ public class SimulationFrame extends JFrame {
 
   private void gameLoop() {
     // 处理事件
+    handleInputEvent();
     // 更新物理世界
     long nowNano = System.nanoTime();
     double elapsedTime = (nowNano - lastNanoTime) / NANO_TO_BASE;
@@ -81,6 +93,18 @@ public class SimulationFrame extends JFrame {
     lastNanoTime = nowNano;
     // 触发panel重画
     this.simulationPanel.repaint();
+  }
+
+  private void handleInputEvent() {
+    // 鼠标滚轮缩放
+    double resetScale = zoomInputHandler.getScaleAndReset();
+    simulationPanel.getCamera().scale *= resetScale;
+    simulationPanel.getCamera().offsetX *= resetScale;
+    simulationPanel.getCamera().offsetY *= resetScale;
+    // 鼠标焦点移动
+    FlatVector offset = mousePanningInputHandler.getOffsetAndReset();
+    simulationPanel.getCamera().offsetX += offset.x;
+    simulationPanel.getCamera().offsetY += offset.y;
   }
 
 

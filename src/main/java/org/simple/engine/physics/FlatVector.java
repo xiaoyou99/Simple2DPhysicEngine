@@ -16,7 +16,7 @@ public class FlatVector {
     this.y = y;
   }
 
-  public static FlatVector Zero = new FlatVector(0f, 0f);
+  public static FlatVector Zero = new FlatVector(0d, 0d);
 
   // static compute methods
 

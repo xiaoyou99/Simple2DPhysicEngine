@@ -37,8 +37,8 @@ public class FlatBody {
       double restitution, boolean isStatic, double radius, double width, double height, BodyTypeEnum bodyType) {
     this.position = position;
     this.linearVelocity = FlatVector.Zero;
-    this.rotation = 0f;
-    this.rotationVelocity = 0f;
+    this.rotation = 0d;
+    this.rotationVelocity = 0d;
 
     this.mass = mass;
     this.area = area;

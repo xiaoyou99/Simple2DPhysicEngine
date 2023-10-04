@@ -78,7 +78,7 @@ public class DevApp {
    * 画一个圆和一个长方形，验证基本的几何关系
    */
   private static void validateCircleAndBoxCorrect() {
-    Camera camera = new Camera(15.0, 0, 0);
+    Camera camera = new Camera(15.0, 500, -200);
     FlatWorld flatWorld = new FlatWorld();
 
 

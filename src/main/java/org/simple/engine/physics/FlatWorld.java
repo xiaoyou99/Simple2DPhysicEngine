@@ -59,10 +59,10 @@ public class FlatWorld {
 
   private void step() {
     // todo: 这里是测试代码 每一步前进0.02m
-    for(FlatBody body : bodies) {
-      FlatVector position = body.getPosition();
-      body.setPosition(position.add(new FlatVector(0.02d, 0.0d)));
-    }
+//    for(FlatBody body : bodies) {
+//      FlatVector position = body.getPosition();
+//      body.setPosition(position.add(new FlatVector(0.02d, 0.0d)));
+//    }
   }
 
   /**

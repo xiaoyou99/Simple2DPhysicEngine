@@ -34,9 +34,12 @@ public class ZoomInputHandler extends AbstractMouseInputHandler implements Input
     }
   }
 
-  public double getResetScale() {
+  public double getScaleAndReset() {
     synchronized (lock) {
-      return this.scale;
+      double currScale = this.scale;
+      // 重置scale, 否则很快就会指数级增长或缩小
+      this.scale = 1.0;
+      return currScale;
     }
   }
 

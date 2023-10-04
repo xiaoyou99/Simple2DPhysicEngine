@@ -49,12 +49,12 @@ public class SimulationPanel extends JPanel {
     AffineTransform yFlip = AffineTransform.getScaleInstance(1, -1);
     // 新坐标系原点设置为画面中心
     AffineTransform move = AffineTransform.getTranslateInstance(this.getWidth() / 2.0,
-        - this.getHeight() / 2.0);
+        this.getHeight() / 2.0);
     // camera焦点偏移
     AffineTransform cameraMove = AffineTransform.getTranslateInstance(camera.offsetX, camera.offsetY);
-    g2D.transform(yFlip);
     g2D.transform(move);
     g2D.transform(cameraMove);
+    g2D.transform(yFlip);
   }
 
   public void addSimulationBody(SimulationBody body) {
