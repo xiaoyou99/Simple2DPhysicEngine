@@ -4,13 +4,14 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.List;
 
 /**
  * 抽象鼠标事件Handler
  *
  * @since 2023/10/03
  */
-public class AbstractMouseInputHandler extends AbstractInputHandler implements InputHandler {
+public abstract class AbstractMouseInputHandler extends AbstractInputHandler implements InputHandler {
 
   private final MouseAdapter mouseAdapter;
 
@@ -24,7 +25,6 @@ public class AbstractMouseInputHandler extends AbstractInputHandler implements I
     this.component.addMouseWheelListener(this.mouseAdapter);
     this.component.addMouseListener(this.mouseAdapter);
     this.component.addMouseMotionListener(this.mouseAdapter);
-
   }
 
   @Override
@@ -43,15 +43,25 @@ public class AbstractMouseInputHandler extends AbstractInputHandler implements I
 
     @Override
     public void mousePressed(MouseEvent e) {
-      if (e.isConsumed()) {
+      if (hasActiveMutexHandler()) {
         return;
       }
       onMousePressed(e);
     }
 
+    private boolean hasActiveMutexHandler() {
+      List<InputHandler> mutexHandlers = getMutexHandler();
+      for (InputHandler handler : mutexHandlers) {
+        if (handler.isActive()) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     @Override
     public void mouseDragged(MouseEvent e) {
-      if (e.isConsumed()) {
+      if (hasActiveMutexHandler()) {
         return;
       }
       onMouseDragged(e);
@@ -59,7 +69,7 @@ public class AbstractMouseInputHandler extends AbstractInputHandler implements I
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      if (e.isConsumed()) {
+      if (hasActiveMutexHandler()) {
         return;
       }
       onMouseReleased(e);

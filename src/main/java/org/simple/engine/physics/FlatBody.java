@@ -104,6 +104,15 @@ public class FlatBody {
     }
   }
 
+  // non-static methods
+  public void move(FlatVector move)  {
+    this.position = new FlatVector(this.position.x + move.x, this.position.y + move.y);
+  }
+
+  public void moveTo(FlatVector destination)  {
+    this.position = destination;
+  }
+
   // getter and setter
   public FlatVector getPosition() {
     return position;

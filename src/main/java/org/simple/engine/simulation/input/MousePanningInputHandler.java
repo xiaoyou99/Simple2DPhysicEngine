@@ -10,11 +10,13 @@ import org.simple.engine.physics.FlatVector;
  *
  * @since 2023/10/04
  */
-public class MousePanningInputHandler extends AbstractMouseInputHandler implements InputHandler{
+public class MousePanningInputHandler extends AbstractMouseInputHandler implements InputHandler {
 
   private final Object lock;
 
   private Point start;
+
+  private boolean panning;
 
   // 记录当前的移动offset, 用于更新camera的offset
   private double offsetX;
@@ -29,6 +31,7 @@ public class MousePanningInputHandler extends AbstractMouseInputHandler implemen
   protected void onMousePressed(MouseEvent e) {
     this.clearPanningState();
     this.start = e.getPoint();
+    this.panning = true;
   }
 
   @Override
@@ -51,6 +54,7 @@ public class MousePanningInputHandler extends AbstractMouseInputHandler implemen
 
   private void clearPanningState() {
     this.start = null;
+    this.panning = false;
   }
 
   /**
@@ -67,4 +71,8 @@ public class MousePanningInputHandler extends AbstractMouseInputHandler implemen
     }
   }
 
+  @Override
+  public boolean isActive() {
+    return panning;
+  }
 }

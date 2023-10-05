@@ -6,8 +6,9 @@ import javax.swing.JFrame;
 import lombok.Getter;
 import org.simple.engine.physics.FlatVector;
 import org.simple.engine.physics.FlatWorld;
+import org.simple.engine.simulation.input.MouseMovingInputHandler;
 import org.simple.engine.simulation.input.MousePanningInputHandler;
-import org.simple.engine.simulation.input.ZoomInputHandler;
+import org.simple.engine.simulation.input.MouseZoomInputHandler;
 
 /**
  * 代表屏幕中，整个应用的窗口
@@ -32,7 +33,8 @@ public class SimulationFrame extends JFrame {
   private long lastNanoTime;
 
   // 事件处理器
-  private final ZoomInputHandler zoomInputHandler;
+  private final MouseZoomInputHandler mouseZoomInputHandler;
+  private final MouseMovingInputHandler mouseMovingInputHandler;
   private final MousePanningInputHandler mousePanningInputHandler;
 
   public SimulationFrame(Camera camera, FlatWorld flatWorld) {
@@ -49,11 +51,15 @@ public class SimulationFrame extends JFrame {
     pack();
     setVisible(true);
     // 事件处理器初始化
-    zoomInputHandler = new ZoomInputHandler(simulationPanel);
-    zoomInputHandler.install();
+    mouseZoomInputHandler = new MouseZoomInputHandler(simulationPanel);
+    mouseZoomInputHandler.install();
+    mouseMovingInputHandler = new MouseMovingInputHandler(simulationPanel, camera, flatWorld);
+    mouseMovingInputHandler.install();
     mousePanningInputHandler = new MousePanningInputHandler(simulationPanel);
     mousePanningInputHandler.install();
-
+    // 互斥事件处理
+    mouseMovingInputHandler.addMutexHandler(mousePanningInputHandler);
+    mousePanningInputHandler.addMutexHandler(mouseMovingInputHandler);
   }
 
   @Override
@@ -97,7 +103,7 @@ public class SimulationFrame extends JFrame {
 
   private void handleInputEvent() {
     // 鼠标滚轮缩放
-    double resetScale = zoomInputHandler.getScaleAndReset();
+    double resetScale = mouseZoomInputHandler.getScaleAndReset();
     simulationPanel.getCamera().scale *= resetScale;
     simulationPanel.getCamera().offsetX *= resetScale;
     simulationPanel.getCamera().offsetY *= resetScale;

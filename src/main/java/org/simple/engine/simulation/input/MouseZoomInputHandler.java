@@ -8,13 +8,13 @@ import java.awt.event.MouseWheelEvent;
  *
  * @since 2023/10/03
  */
-public class ZoomInputHandler extends AbstractMouseInputHandler implements InputHandler {
+public class MouseZoomInputHandler extends AbstractMouseInputHandler implements InputHandler {
 
   private final Object lock;
 
   private double scale;
 
-  public ZoomInputHandler(Component component) {
+  public MouseZoomInputHandler(Component component) {
     super(component);
     this.lock = new Object();
     this.scale = 1.0d;
@@ -43,4 +43,8 @@ public class ZoomInputHandler extends AbstractMouseInputHandler implements Input
     }
   }
 
+  @Override
+  public boolean isActive() {
+    return false;
+  }
 }

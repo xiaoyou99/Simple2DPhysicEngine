@@ -83,4 +83,34 @@ public class FlatWorld {
     bodies.add(flatBody);
   }
 
+  /**
+   * 选中一个点，给出包含这个点上的刚体
+   *
+   * @param position
+   * @return 包含这个点上的刚体
+   */
+  // todo: 后期考虑性能优化
+  public List<FlatBody> getBodyAt(FlatVector position) {
+    List<FlatBody> findBodies = new ArrayList<>();
+    for (FlatBody body : this.bodies) {
+      FlatVector subVec = position.sub(body.getPosition());
+      switch (body.bodyType) {
+        case CIRCLE:
+          if (subVec.length() <= body.radius) {
+            findBodies.add(body);
+          }
+          break;
+        case BOX:
+          if (Math.abs(subVec.x) < body.width / 2 && Math.abs(subVec.y) < body.height / 2) {
+            findBodies.add(body);
+          }
+          break;
+        case POLYGON:
+          // todo: 待补充
+          break;
+      }
+    }
+    return findBodies;
+  }
+
 }

@@ -40,6 +40,10 @@ public class FlatVector {
     return new FlatVector(-v.x, -v.y);
   }
 
+  public static double length(FlatVector v) {
+    return Math.sqrt(v.x * v.x + v.y * v.y);
+  }
+
   // non-static compute methods
 
   public FlatVector add(FlatVector other) {
@@ -60,6 +64,10 @@ public class FlatVector {
 
   public FlatVector negative() {
     return new FlatVector(-this.x, -this.y);
+  }
+
+  public double length() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
   // equals, hashCode
