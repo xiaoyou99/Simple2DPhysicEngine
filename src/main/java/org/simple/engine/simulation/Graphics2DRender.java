@@ -3,7 +3,7 @@ package org.simple.engine.simulation;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Path2D;
 import org.simple.engine.physics.FlatBody;
 import org.simple.engine.physics.FlatVector;
 import org.simple.engine.simulation.body.SimulationBody;
@@ -42,15 +42,25 @@ public class Graphics2DRender {
   }
 
   private static void renderBox(Graphics2D g2d, FlatBody flatBody, Color color, Camera camera) {
-    FlatVector position = flatBody.getPosition();
-    double width = flatBody.width;
-    double height = flatBody.height;
-    Rectangle2D.Double rectangle = new Rectangle2D.Double((position.x - width / 2) * camera.scale,
-        (position.y - height / 2) * camera.scale, width * camera.scale,
-        height * camera.scale);
+//    double width = flatBody.width;
+//    double height = flatBody.height;
+//    FlatVector position = flatBody.getPosition();
+//    Rectangle2D.Double rectangle = new Rectangle2D.Double((position.x - width / 2) * camera.scale,
+//        (position.y - height / 2) * camera.scale, width * camera.scale,
+//        height * camera.scale);
+
+    FlatVector[] vertices = flatBody.getTransformVertices();
+    // create the awt polygon
+    Path2D.Double p = new Path2D.Double();
+    p.moveTo(vertices[0].x * camera.scale, vertices[0].y * camera.scale);
+    for (int i = 1; i < vertices.length; i++) {
+      p.lineTo(vertices[i].x * camera.scale, vertices[i].y * camera.scale);
+    }
+    p.closePath();
+    
     g2d.setColor(color);
-    g2d.fill(rectangle);
+    g2d.fill(p);
     g2d.setColor(Color.WHITE);
-    g2d.draw(rectangle);
+    g2d.draw(p);
   }
 }

@@ -17,7 +17,8 @@ public class DevApp {
 //    twoCircleDrawing();
 //    randomBodyDrawing();
 //    validateCircleAndBoxCorrect();
-    circleCollision();
+//    circleCollision();
+    boxRotation();
   }
 
 
@@ -122,15 +123,31 @@ public class DevApp {
       flatWorld.addBody(circleBody);
     }
 
-//    FlatVector position = new FlatVector(1d, 1d);
-//    double radius = 1d;
-//    FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
-//    flatWorld.addBody(circleBody);
-//
-//    FlatVector position2 = new FlatVector(1d, 2.5d);
-//    double radius2 = 1d;
-//    FlatBody circleBody2 = FlatBody.createCircleBody(position2, 1.2d, 0.2d, false, radius2);
-//    flatWorld.addBody(circleBody2);
+    // 初始化Frame
+    SimulationFrame simulationFrame = new SimulationFrame(camera, flatWorld);
+    for (FlatBody body : flatWorld.getBodies()) {
+      simulationFrame.getSimulationPanel().addSimulationBody(new SimulationBody(RandomUtil.getRandomColor(), body));
+    }
+    simulationFrame.start();
+  }
+
+  /**
+   * 验证长方形旋转
+   */
+  private static void boxRotation() {
+    Camera camera = new Camera(24.0, 0, 0);
+    FlatWorld flatWorld = new FlatWorld();
+
+
+    double min = -10d;
+    double max = 10d;
+    for (int i = 0; i < 10; i++) {
+      FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
+      double width = RandomUtil.randomDouble(0.02d, 2d);
+      double height = RandomUtil.randomDouble(0.02d, 2d);
+      FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
+      flatWorld.addBody(boxBody);
+    }
 
     // 初始化Frame
     SimulationFrame simulationFrame = new SimulationFrame(camera, flatWorld);

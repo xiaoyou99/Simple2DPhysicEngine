@@ -44,6 +44,13 @@ public class FlatVector {
     return Math.sqrt(v.x * v.x + v.y * v.y);
   }
 
+  public static FlatVector transform(FlatVector v, FlatTransform transform) {
+    // x_new = x cos - y sin + offsetX
+    // y_new = x sin + y cos + offsetY
+    return new FlatVector(v.x * transform.cos - v.y * transform.sin + transform.positionX,
+        v.x * transform.sin + v.y * transform.cos + transform.positionY);
+  }
+
   // non-static compute methods
 
   public FlatVector add(FlatVector other) {

@@ -19,8 +19,10 @@ public class FlatBody {
   // 可变属性
   private FlatVector position;
   private FlatVector linearVelocity;
-  public double rotation;
-  public double rotationVelocity;
+  private double rotation;
+  private double rotationVelocity;
+  private FlatVector[] transformVertices;
+  private boolean transformUpdatedRequired;
 
   // 不可变属性
   public final double mass;
@@ -31,6 +33,8 @@ public class FlatBody {
   public final double radius;
   public final double width;
   public final double height;
+  public final FlatVector[] vertices;
+  public final int[] triangles;
   public final BodyTypeEnum bodyType;
 
   private FlatBody(FlatVector position, double mass, double area, double density,
@@ -49,6 +53,37 @@ public class FlatBody {
     this.width = width;
     this.height = height;
     this.bodyType = bodyType;
+    
+    if (BodyTypeEnum.BOX.equals(bodyType)) {
+      this.vertices = createBoxVertices(width, height);
+      this.transformVertices = createBoxVertices(width, height);
+      this.triangles = createBoxTriangles();
+    } else {
+      this.vertices = null;
+      this.transformVertices = null;
+      this.triangles = null;
+    }
+    this.transformUpdatedRequired = true;
+  }
+
+  private FlatVector[] createBoxVertices(double width, double height) {
+    double left = - width / 2d;
+    double right = width / 2d;
+    double top = height / 2d;
+    double bottom = - height / 2d;
+
+    FlatVector[] vertices = new FlatVector[4];
+    vertices[0] = new FlatVector(left, top);
+    vertices[1] = new FlatVector(right, top);
+    vertices[2] = new FlatVector(right, bottom);
+    vertices[3] = new FlatVector(left, bottom);
+
+    return vertices;
+  }
+
+  private int[] createBoxTriangles() {
+    // 0 left-top  1  right-top  2 right-bottom  3 left-bottom
+    return new int[] {0, 1, 2, 0, 2, 3};
   }
 
   /**
@@ -105,12 +140,33 @@ public class FlatBody {
   }
 
   // non-static methods
+  public FlatVector[] getTransformVertices() {
+    if (this.vertices == null) {
+      return this.transformVertices;
+    }
+    if (this.transformUpdatedRequired) {
+      FlatTransform transform = new FlatTransform(this.position, this.rotation);
+      for(int i = 0; i < this.vertices.length; i++) {
+        FlatVector v = this.vertices[i];
+        this.transformVertices[i] = FlatVector.transform(v, transform);
+      }
+    }
+    return this.transformVertices;
+  }
+
   public void move(FlatVector move)  {
     this.position = new FlatVector(this.position.x + move.x, this.position.y + move.y);
+    this.transformUpdatedRequired = true;
   }
 
   public void moveTo(FlatVector destination)  {
     this.position = destination;
+    this.transformUpdatedRequired = true;
+  }
+
+  public void rotate(double angle) {
+    this.rotation += angle;
+    this.transformUpdatedRequired = true;
   }
 
   // getter and setter

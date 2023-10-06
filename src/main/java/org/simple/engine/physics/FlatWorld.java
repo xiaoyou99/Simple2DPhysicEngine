@@ -3,8 +3,6 @@ package org.simple.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import org.simple.engine.physics.collision.CollisionInfo;
-import org.simple.engine.physics.collision.Collisions;
 
 /**
  * RealWorld
@@ -61,19 +59,24 @@ public class FlatWorld {
 
   private void step() {
     // 碰撞处理
-    for (int i = 0; i < bodies.size() - 1; i++) {
-      FlatBody bodyA = bodies.get(i);
-      for (int j = i + 1; j < bodies.size(); j++) {
-        FlatBody bodyB = bodies.get(j);
-        CollisionInfo collisionInfo = Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius,
-            bodyB.getPosition(), bodyB.radius);
-        if (!collisionInfo.isHasCollision()) {
-          continue;
-        }
-        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
-        bodyA.move(move.negative());
-        bodyB.move(move);
-      }
+//    for (int i = 0; i < bodies.size() - 1; i++) {
+//      FlatBody bodyA = bodies.get(i);
+//      for (int j = i + 1; j < bodies.size(); j++) {
+//        FlatBody bodyB = bodies.get(j);
+//        CollisionInfo collisionInfo = Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius,
+//            bodyB.getPosition(), bodyB.radius);
+//        if (!collisionInfo.isHasCollision()) {
+//          continue;
+//        }
+//        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
+//        bodyA.move(move.negative());
+//        bodyB.move(move);
+//      }
+//    }
+
+    // 测试刚体旋转
+    for (FlatBody body : bodies) {
+      body.rotate((Math.PI / 2) * settings.getPeriod());
     }
   }
 
