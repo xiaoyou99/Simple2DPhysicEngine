@@ -15,10 +15,10 @@ public class DevApp {
 
   public static void main(String[] args) {
 //    twoCircleDrawing();
-//    randomBodyDrawing();
+    randomBodyDrawing();
 //    validateCircleAndBoxCorrect();
 //    circleCollision();
-    boxRotation();
+//    boxRotation();
   }
 
 
@@ -66,6 +66,7 @@ public class DevApp {
       double width = RandomUtil.randomDouble(0.02d, 2d);
       double height = RandomUtil.randomDouble(0.02d, 2d);
       FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
+      boxBody.rotate(Math.PI * RandomUtil.randomDouble(0, 2d));
       flatWorld.addBody(boxBody);
     }
 
@@ -107,7 +108,7 @@ public class DevApp {
   }
 
   /**
-   * 画一个圆和一个长方形，验证基本的几何关系
+   * 圆形碰撞
    */
   private static void circleCollision() {
     Camera camera = new Camera(24.0, 0, 0);

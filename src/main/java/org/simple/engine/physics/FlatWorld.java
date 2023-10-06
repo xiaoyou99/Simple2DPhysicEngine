@@ -17,7 +17,7 @@ public class FlatWorld {
   private List<FlatBody> bodies;
 
   // 时间序列对象
-  protected final TimeStep timeStep;
+  private final TimeStep timeStep;
 
   // 设置
   private Settings settings;
@@ -32,10 +32,23 @@ public class FlatWorld {
     this.time = 0.0d;
   }
 
+  /**
+   * 更新物理世界
+   *
+   * @param elapsedTime 经过的时间
+   * @return step是否增加
+   */
   public boolean update(double elapsedTime) {
     return this.update(elapsedTime, 1);
   }
 
+  /**
+   * 更新物理世界
+   *
+   * @param elapsedTime 经过的时间
+   * @param maximumSteps 最多迭代多少步
+   * @return step是否增加
+   */
   public boolean update(double elapsedTime, int maximumSteps) {
     if (elapsedTime < 0) {
       elapsedTime = 0.0d;
@@ -81,18 +94,41 @@ public class FlatWorld {
 //      body.rotate((Math.PI / 2) * settings.getPeriod());
 //    }
 
-    // Box碰撞处理
+//    // Box碰撞处理
+//    for (int i = 0; i < bodies.size() - 1; i++) {
+//      FlatBody bodyA = bodies.get(i);
+//      for (int j = i + 1; j < bodies.size(); j++) {
+//        FlatBody bodyB = bodies.get(j);
+//        CollisionInfo collisionInfo = Collisions.intersectPolygons(bodyA.getTransformVertices(),
+//            bodyB.getTransformVertices());
+//        if (!collisionInfo.isHasCollision()) {
+//          continue;
+//        }
+//        bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
+//        bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
+//      }
+//    }
+
+    // Circle 和 box 的碰撞处理
     for (int i = 0; i < bodies.size() - 1; i++) {
       FlatBody bodyA = bodies.get(i);
       for (int j = i + 1; j < bodies.size(); j++) {
         FlatBody bodyB = bodies.get(j);
-        CollisionInfo collisionInfo = Collisions.intersectPolygons(bodyA.getTransformVertices(),
-            bodyB.getTransformVertices());
-        if (!collisionInfo.isHasCollision()) {
-          continue;
+
+        CollisionInfo collisionInfo = null;
+        if (bodyA.bodyType.equals(BodyTypeEnum.BOX) && bodyB.bodyType.equals(BodyTypeEnum.CIRCLE)) {
+          collisionInfo = Collisions.intersectCirclePolygon(bodyB.getPosition(), bodyB.radius, bodyA.getTransformVertices());
+          if (collisionInfo.isHasCollision()) {
+            bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
+            bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
+          }
+        } else if (bodyA.bodyType.equals(BodyTypeEnum.CIRCLE) && bodyB.bodyType.equals(BodyTypeEnum.BOX)) {
+          collisionInfo = Collisions.intersectCirclePolygon(bodyA.getPosition(), bodyA.radius, bodyB.getTransformVertices());
+          if (collisionInfo.isHasCollision()) {
+            bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
+            bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
+          }
         }
-        bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
-        bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
       }
     }
   }
