@@ -151,6 +151,8 @@ public class FlatBody {
         this.transformVertices[i] = FlatVector.transform(v, transform);
       }
     }
+
+    this.transformUpdatedRequired = false;
     return this.transformVertices;
   }
 

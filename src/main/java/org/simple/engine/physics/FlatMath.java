@@ -22,7 +22,7 @@ public class FlatMath {
   }
 
   public static double dot(FlatVector v1, FlatVector v2) {
-    return v1.x * v2.x + v1.y + v2.y;
+    return v1.x * v2.x + v1.y * v2.y;
   }
 
   /**

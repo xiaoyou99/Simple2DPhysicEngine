@@ -94,4 +94,9 @@ public class FlatVector {
   public int hashCode() {
     return Double.hashCode(this.x) * 32 + Double.hashCode(this.y);
   }
+
+  @Override
+  public String toString() {
+    return "[" + x + ", " + y + "]";
+  }
 }

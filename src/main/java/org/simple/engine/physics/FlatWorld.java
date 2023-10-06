@@ -3,6 +3,7 @@ package org.simple.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import org.simple.engine.physics.collision.Collisions;
 
 /**
  * RealWorld
@@ -58,7 +59,7 @@ public class FlatWorld {
 
 
   private void step() {
-    // 碰撞处理
+    // 圆形碰撞处理
 //    for (int i = 0; i < bodies.size() - 1; i++) {
 //      FlatBody bodyA = bodies.get(i);
 //      for (int j = i + 1; j < bodies.size(); j++) {
@@ -74,9 +75,21 @@ public class FlatWorld {
 //      }
 //    }
 
-    // 测试刚体旋转
-    for (FlatBody body : bodies) {
-      body.rotate((Math.PI / 2) * settings.getPeriod());
+//    // 测试刚体旋转
+//    for (FlatBody body : bodies) {
+//      body.rotate((Math.PI / 2) * settings.getPeriod());
+//    }
+
+    // Box碰撞处理
+    for (int i = 0; i < bodies.size() - 1; i++) {
+      FlatBody bodyA = bodies.get(i);
+      for (int j = i + 1; j < bodies.size(); j++) {
+        FlatBody bodyB = bodies.get(j);
+        boolean collision = Collisions.intersectPolygons(bodyA.getTransformVertices(), bodyB.getTransformVertices());
+        if (collision) {
+          System.out.println("111");
+        }
+      }
     }
   }
 

@@ -135,19 +135,31 @@ public class DevApp {
    * 验证长方形旋转
    */
   private static void boxRotation() {
-    Camera camera = new Camera(24.0, 0, 0);
+    Camera camera = new Camera(28.0, 0, 0);
     FlatWorld flatWorld = new FlatWorld();
 
 
     double min = -10d;
     double max = 10d;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 12; i++) {
       FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
       double width = RandomUtil.randomDouble(0.02d, 2d);
       double height = RandomUtil.randomDouble(0.02d, 2d);
       FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
       flatWorld.addBody(boxBody);
     }
+
+//    FlatVector position2 = new FlatVector(1, 0);
+//    double width = 2;
+//    double height = 2;
+//    FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
+//    flatWorld.addBody(boxBody);
+//
+//    FlatVector position1 = new FlatVector(3, 0);
+//    double width1 = 1.8;
+//    double height1 = 1.8;
+//    FlatBody boxBody1 = FlatBody.createBoxBody(position1, 1.2d, 0.2d, false, width1, height1);
+//    flatWorld.addBody(boxBody1);
 
     // 初始化Frame
     SimulationFrame simulationFrame = new SimulationFrame(camera, flatWorld);
