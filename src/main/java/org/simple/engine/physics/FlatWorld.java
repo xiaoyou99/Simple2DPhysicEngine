@@ -3,6 +3,8 @@ package org.simple.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import org.simple.engine.physics.collision.CollisionInfo;
+import org.simple.engine.physics.collision.Collisions;
 
 /**
  * RealWorld
@@ -58,11 +60,21 @@ public class FlatWorld {
 
 
   private void step() {
-    // todo: 这里是测试代码 每一步前进0.02m
-//    for(FlatBody body : bodies) {
-//      FlatVector position = body.getPosition();
-//      body.setPosition(position.add(new FlatVector(0.02d, 0.0d)));
-//    }
+    // 碰撞处理
+    for (int i = 0; i < bodies.size() - 1; i++) {
+      FlatBody bodyA = bodies.get(i);
+      for (int j = i + 1; j < bodies.size(); j++) {
+        FlatBody bodyB = bodies.get(j);
+        CollisionInfo collisionInfo = Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius,
+            bodyB.getPosition(), bodyB.radius);
+        if (!collisionInfo.isHasCollision()) {
+          continue;
+        }
+        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
+        bodyA.move(move.negative());
+        bodyB.move(move);
+      }
+    }
   }
 
   /**

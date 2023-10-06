@@ -16,8 +16,10 @@ public class DevApp {
   public static void main(String[] args) {
 //    twoCircleDrawing();
 //    randomBodyDrawing();
-    validateCircleAndBoxCorrect();
+//    validateCircleAndBoxCorrect();
+    circleCollision();
   }
+
 
   /**
    * 画两个圆，验证基本正确性
@@ -94,6 +96,41 @@ public class DevApp {
     FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
     flatWorld.addBody(circleBody);
 
+
+    // 初始化Frame
+    SimulationFrame simulationFrame = new SimulationFrame(camera, flatWorld);
+    for (FlatBody body : flatWorld.getBodies()) {
+      simulationFrame.getSimulationPanel().addSimulationBody(new SimulationBody(RandomUtil.getRandomColor(), body));
+    }
+    simulationFrame.start();
+  }
+
+  /**
+   * 画一个圆和一个长方形，验证基本的几何关系
+   */
+  private static void circleCollision() {
+    Camera camera = new Camera(24.0, 0, 0);
+    FlatWorld flatWorld = new FlatWorld();
+
+
+    double min = -10d;
+    double max = 10d;
+    for (int i = 0; i < 10; i++) {
+      FlatVector position = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
+      double radius = 1d;
+      FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
+      flatWorld.addBody(circleBody);
+    }
+
+//    FlatVector position = new FlatVector(1d, 1d);
+//    double radius = 1d;
+//    FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
+//    flatWorld.addBody(circleBody);
+//
+//    FlatVector position2 = new FlatVector(1d, 2.5d);
+//    double radius2 = 1d;
+//    FlatBody circleBody2 = FlatBody.createCircleBody(position2, 1.2d, 0.2d, false, radius2);
+//    flatWorld.addBody(circleBody2);
 
     // 初始化Frame
     SimulationFrame simulationFrame = new SimulationFrame(camera, flatWorld);
