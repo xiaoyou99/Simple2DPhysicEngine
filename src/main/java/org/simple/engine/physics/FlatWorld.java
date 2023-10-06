@@ -3,6 +3,7 @@ package org.simple.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import org.simple.engine.physics.collision.CollisionInfo;
 import org.simple.engine.physics.collision.Collisions;
 
 /**
@@ -85,10 +86,13 @@ public class FlatWorld {
       FlatBody bodyA = bodies.get(i);
       for (int j = i + 1; j < bodies.size(); j++) {
         FlatBody bodyB = bodies.get(j);
-        boolean collision = Collisions.intersectPolygons(bodyA.getTransformVertices(), bodyB.getTransformVertices());
-        if (collision) {
-          System.out.println("111");
+        CollisionInfo collisionInfo = Collisions.intersectPolygons(bodyA.getTransformVertices(),
+            bodyB.getTransformVertices());
+        if (!collisionInfo.isHasCollision()) {
+          continue;
         }
+        bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
+        bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
       }
     }
   }
@@ -121,15 +125,15 @@ public class FlatWorld {
   public List<FlatBody> getBodyAt(FlatVector position) {
     List<FlatBody> findBodies = new ArrayList<>();
     for (FlatBody body : this.bodies) {
-      FlatVector subVec = position.sub(body.getPosition());
       switch (body.bodyType) {
         case CIRCLE:
+          FlatVector subVec = position.sub(body.getPosition());
           if (subVec.length() <= body.radius) {
             findBodies.add(body);
           }
           break;
         case BOX:
-          if (Math.abs(subVec.x) < body.width / 2 && Math.abs(subVec.y) < body.height / 2) {
+          if (isPointInPolygon(position, body.getTransformVertices())) {
             findBodies.add(body);
           }
           break;
@@ -140,5 +144,28 @@ public class FlatWorld {
     }
     return findBodies;
   }
+
+  // 射线法判断点是否在多边形中，chatGpt生成
+  private static boolean isPointInPolygon(FlatVector point, FlatVector[] polygon) {
+    int intersectCount = 0;
+    int n = polygon.length;
+
+    for (int i = 0; i < n; i++) {
+      FlatVector p1 = polygon[i];
+      FlatVector p2 = polygon[(i + 1) % n];
+      // 从point出发，射出一条沿x轴正向的射线
+      if (point.y > Math.min(p1.y, p2.y) && point.y < Math.max(p1.y, p2.y)) {
+        if (point.x <= Math.max(p1.x, p2.x) && p1.y != p2.y) {
+          double x = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+          if (p1.x == p2.x || point.x <= x) {
+            intersectCount++;
+          }
+        }
+      }
+    }
+
+    return intersectCount % 2 == 1;
+  }
+
 
 }

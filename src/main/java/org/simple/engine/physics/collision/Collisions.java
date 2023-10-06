@@ -23,35 +23,58 @@ public class Collisions {
          radiusA + radiusB - distance);
   }
 
-  public static boolean intersectPolygons(FlatVector[] verticesA, FlatVector[] verticesB) {
+  public static CollisionInfo intersectPolygons(FlatVector[] verticesA, FlatVector[] verticesB) {
+    double depth = Double.POSITIVE_INFINITY;
+    FlatVector normal = null;
+
+    // 以垂直于A的边的方向作为投影方向
     for (int i = 0; i < verticesA.length; i++) {
       FlatVector edge = FlatVector.sub(verticesA[(i + 1) % verticesA.length], verticesA[i]);
-      // 顺时针旋转90度，并normalize
-      FlatVector normal = new FlatVector(-edge.y, edge.x);
+      // 顺时针旋转90度。不进行normalize
+      FlatVector axis = new FlatVector(-edge.y, edge.x);
       // 向法线方向投影
-      double[] projectionA = projection(verticesA, normal);
-      double[] projectionB = projection(verticesB, normal);
-      // 判断是否有gap
+      double[] projectionA = projection(verticesA, axis);
+      double[] projectionB = projection(verticesB, axis);
+      // 判断是否有gap, 如果有gap代表没有碰撞
       if (projectionA[1] < projectionB[0] || projectionB[1] < projectionA[0]) {
-        return false;
+        return new CollisionInfo();
+      }
+      // 没有gap, 则试图招到最小的depth方向
+      double currDepth = Math.min(projectionA[1] - projectionB[0], projectionB[1] - projectionA[0]);
+      if (currDepth < depth) {
+        depth = currDepth;
+        normal = axis;
       }
     }
 
-
+    // 重复上面的操作，但是需要以垂直于B的边的方向作为投影方向
     for (int i = 0; i < verticesB.length; i++) {
       FlatVector edge = FlatVector.sub(verticesB[i], verticesB[(i + 1) % verticesB.length]);
-      // 顺时针旋转90度，并normalize
-      FlatVector normal = new FlatVector(-edge.y, edge.x);
-      // 向法线方向投影
-      double[] projectionA = projection(verticesA, normal);
-      double[] projectionB = projection(verticesB, normal);
-      // 判断是否有gap
+      FlatVector axis = new FlatVector(-edge.y, edge.x);
+
+      double[] projectionA = projection(verticesA, axis);
+      double[] projectionB = projection(verticesB, axis);
+
       if (projectionA[1] <= projectionB[0] || projectionB[1] <= projectionA[0]) {
-        return false;
+        return new CollisionInfo();
+      }
+      double currDepth = Math.min(projectionA[1] - projectionB[0], projectionB[1] - projectionA[0]);
+      if (currDepth < depth) {
+        depth = currDepth;
+        normal = axis;
       }
     }
 
-    return true;
+    // 由于之前没有对axis做normalize，这里需要做normalize处理
+    depth /= FlatVector.length(normal);
+    normal = FlatMath.normalize(normal);
+    // 这里指定发现方向，由A的中心指向B的中心
+    FlatVector centerA = findArithmeticMean(verticesA);
+    FlatVector centerB = findArithmeticMean(verticesB);
+    FlatVector directionB2A = FlatVector.sub(centerB, centerA);
+    normal = FlatMath.dot(directionB2A, normal) > 0 ? normal : normal.negative();
+
+    return new CollisionInfo(true, normal, depth);
   }
 
   private static double[] projection(FlatVector[] vertices, FlatVector projDirection) {
@@ -68,5 +91,16 @@ public class Collisions {
       }
     }
     return new double[] {min, max};
+  }
+
+  private static FlatVector findArithmeticMean(FlatVector[] vertices) {
+    double sumX = 0d;
+    double sumY = 0d;
+
+    for (FlatVector vertex : vertices) {
+      sumX += vertex.x;
+      sumY += vertex.y;
+    }
+    return new FlatVector(sumX / vertices.length, sumY / vertices.length);
   }
 }

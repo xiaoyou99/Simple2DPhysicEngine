@@ -146,6 +146,7 @@ public class DevApp {
       double width = RandomUtil.randomDouble(0.02d, 2d);
       double height = RandomUtil.randomDouble(0.02d, 2d);
       FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
+      boxBody.rotate(Math.PI * RandomUtil.randomDouble(0d, 1d));
       flatWorld.addBody(boxBody);
     }
 
