@@ -42,12 +42,6 @@ public class Graphics2DRender {
   }
 
   private static void renderBox(Graphics2D g2d, FlatBody flatBody, Color color, Camera camera) {
-//    double width = flatBody.width;
-//    double height = flatBody.height;
-//    FlatVector position = flatBody.getPosition();
-//    Rectangle2D.Double rectangle = new Rectangle2D.Double((position.x - width / 2) * camera.scale,
-//        (position.y - height / 2) * camera.scale, width * camera.scale,
-//        height * camera.scale);
 
     FlatVector[] vertices = flatBody.getTransformVertices();
     // create the awt polygon

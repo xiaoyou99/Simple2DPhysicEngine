@@ -56,17 +56,18 @@ public class DevApp {
 
     double min = -10d;
     double max = 10d;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 10; i++) {
       FlatVector position = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
-      double radius = RandomUtil.randomDouble(0.02d, 3d);
+      double radius = RandomUtil.randomDouble(2d, 3d);
       FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
       flatWorld.addBody(circleBody);
 
       FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
-      double width = RandomUtil.randomDouble(0.02d, 2d);
-      double height = RandomUtil.randomDouble(0.02d, 2d);
+      double width = RandomUtil.randomDouble(2d, 3d);
+      double height = RandomUtil.randomDouble(3d, 4d);
       FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
       boxBody.rotate(Math.PI * RandomUtil.randomDouble(0, 2d));
+      boxBody.setRotationVelocity(RandomUtil.randomDouble(Math.PI / 3, Math.PI / 2));
       flatWorld.addBody(boxBody);
     }
 

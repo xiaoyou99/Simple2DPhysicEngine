@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import lombok.Getter;
 import org.simple.engine.physics.FlatVector;
 import org.simple.engine.physics.FlatWorld;
+import org.simple.engine.simulation.input.KeyboardMovingInputHandler;
 import org.simple.engine.simulation.input.MouseMovingInputHandler;
 import org.simple.engine.simulation.input.MousePanningInputHandler;
 import org.simple.engine.simulation.input.MouseZoomInputHandler;
@@ -36,6 +37,7 @@ public class SimulationFrame extends JFrame {
   private final MouseZoomInputHandler mouseZoomInputHandler;
   private final MouseMovingInputHandler mouseMovingInputHandler;
   private final MousePanningInputHandler mousePanningInputHandler;
+  private final KeyboardMovingInputHandler keyboardMovingInputHandler;
 
   public SimulationFrame(Camera camera, FlatWorld flatWorld) {
     // 初始化panel
@@ -57,6 +59,8 @@ public class SimulationFrame extends JFrame {
     mouseMovingInputHandler.install();
     mousePanningInputHandler = new MousePanningInputHandler(simulationPanel);
     mousePanningInputHandler.install();
+    keyboardMovingInputHandler = new KeyboardMovingInputHandler(simulationPanel, flatWorld);
+    keyboardMovingInputHandler.install();
     // 互斥事件处理
     mouseMovingInputHandler.addMutexHandler(mousePanningInputHandler);
     mousePanningInputHandler.addMutexHandler(mouseMovingInputHandler);

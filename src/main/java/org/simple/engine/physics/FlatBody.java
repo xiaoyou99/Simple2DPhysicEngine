@@ -159,6 +159,7 @@ public class FlatBody {
   public void step(double elapsedTime) {
     this.position = FlatVector.add(this.position, FlatVector.multiply(this.linearVelocity, elapsedTime));
     this.rotation += this.rotationVelocity * elapsedTime;
+    this.transformUpdatedRequired = true;
   }
 
   public void move(FlatVector move)  {
@@ -191,5 +192,13 @@ public class FlatBody {
 
   public void setLinearVelocity(FlatVector linearVelocity) {
     this.linearVelocity = linearVelocity;
+  }
+
+  public double getRotationVelocity() {
+    return rotationVelocity;
+  }
+
+  public void setRotationVelocity(double rotationVelocity) {
+    this.rotationVelocity = rotationVelocity;
   }
 }
