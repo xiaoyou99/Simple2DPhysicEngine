@@ -22,6 +22,9 @@ public class FlatWorld {
   // 设置
   private Settings settings;
 
+  // 重力
+  private FlatVector gravity;
+
   // 距离上次step的时间
   private double time;
 
@@ -30,6 +33,7 @@ public class FlatWorld {
     this.timeStep = new TimeStep(Settings.DEFAULT_PERIOD);
     this.settings = new Settings();
     this.time = 0.0d;
+    this.gravity = new FlatVector(0, -9.81d);
   }
 
   /**
@@ -39,7 +43,7 @@ public class FlatWorld {
    * @return step是否增加
    */
   public boolean update(double elapsedTime) {
-    return this.update(elapsedTime, 1);
+    return this.update(elapsedTime, 10);
   }
 
   /**
@@ -73,64 +77,60 @@ public class FlatWorld {
 
 
   private void step() {
-    // 圆形碰撞处理
-//    for (int i = 0; i < bodies.size() - 1; i++) {
-//      FlatBody bodyA = bodies.get(i);
-//      for (int j = i + 1; j < bodies.size(); j++) {
-//        FlatBody bodyB = bodies.get(j);
-//        CollisionInfo collisionInfo = Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius,
-//            bodyB.getPosition(), bodyB.radius);
-//        if (!collisionInfo.isHasCollision()) {
-//          continue;
-//        }
-//        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
-//        bodyA.move(move.negative());
-//        bodyB.move(move);
-//      }
-//    }
+    // body move
+    for (FlatBody body : bodies) {
+      body.step(settings.getPeriod());
+    }
 
-//    // 测试刚体旋转
-//    for (FlatBody body : bodies) {
-//      body.rotate((Math.PI / 2) * settings.getPeriod());
-//    }
-
-//    // Box碰撞处理
-//    for (int i = 0; i < bodies.size() - 1; i++) {
-//      FlatBody bodyA = bodies.get(i);
-//      for (int j = i + 1; j < bodies.size(); j++) {
-//        FlatBody bodyB = bodies.get(j);
-//        CollisionInfo collisionInfo = Collisions.intersectPolygons(bodyA.getTransformVertices(),
-//            bodyB.getTransformVertices());
-//        if (!collisionInfo.isHasCollision()) {
-//          continue;
-//        }
-//        bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
-//        bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
-//      }
-//    }
-
-    // Circle 和 box 的碰撞处理
+    // body collision resolve
     for (int i = 0; i < bodies.size() - 1; i++) {
       FlatBody bodyA = bodies.get(i);
       for (int j = i + 1; j < bodies.size(); j++) {
         FlatBody bodyB = bodies.get(j);
-
-        CollisionInfo collisionInfo = null;
-        if (bodyA.bodyType.equals(BodyTypeEnum.BOX) && bodyB.bodyType.equals(BodyTypeEnum.CIRCLE)) {
-          collisionInfo = Collisions.intersectCirclePolygon(bodyB.getPosition(), bodyB.radius, bodyA.getTransformVertices());
-          if (collisionInfo.isHasCollision()) {
-            bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
-            bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
-          }
-        } else if (bodyA.bodyType.equals(BodyTypeEnum.CIRCLE) && bodyB.bodyType.equals(BodyTypeEnum.BOX)) {
-          collisionInfo = Collisions.intersectCirclePolygon(bodyA.getPosition(), bodyA.radius, bodyB.getTransformVertices());
-          if (collisionInfo.isHasCollision()) {
-            bodyA.move(FlatVector.multiply(collisionInfo.getNormal(), -collisionInfo.getDepth()));
-            bodyB.move(FlatVector.multiply(collisionInfo.getNormal(), collisionInfo.getDepth()));
-          }
+        CollisionInfo collisionInfo = detectCollision(bodyA, bodyB);
+        if (!collisionInfo.isHasCollision()) {
+          continue;
         }
+        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
+        bodyA.move(move.negative());
+        bodyB.move(move);
       }
     }
+  }
+
+  // 碰撞检测：返回的法线方向，整体是由A指向B的
+  private CollisionInfo detectCollision(FlatBody bodyA, FlatBody bodyB) {
+    if (bodyA.bodyType.equals(BodyTypeEnum.CIRCLE)) {
+      // circle-polygon
+      if (bodyB.bodyType.equals(BodyTypeEnum.BOX) || bodyB.bodyType.equals(BodyTypeEnum.POLYGON)) {
+        return Collisions.intersectCirclePolygon(bodyA.getPosition(), bodyA.radius, bodyB.getTransformVertices());
+      }
+      // circle-circle
+      if (bodyB.bodyType.equals(BodyTypeEnum.CIRCLE)) {
+        return Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius, bodyB.getPosition(), bodyB.radius);
+      }
+    }
+
+    if (bodyA.bodyType.equals(BodyTypeEnum.BOX) || bodyA.bodyType.equals(BodyTypeEnum.POLYGON)) {
+      // polygon-circle
+      if (bodyB.bodyType.equals(BodyTypeEnum.CIRCLE)) {
+        CollisionInfo collisionInfo = Collisions.intersectCirclePolygon(bodyB.getPosition(),
+            bodyB.radius, bodyA.getTransformVertices());
+        // 需要返回相反的方向
+        if (!collisionInfo.isHasCollision()) {
+          return collisionInfo;
+        } else {
+          return new CollisionInfo(true,
+              collisionInfo.getNormal().negative(), collisionInfo.getDepth());
+        }
+      }
+      // polygon-polygon
+      if (bodyB.bodyType.equals(BodyTypeEnum.BOX) || bodyB.bodyType.equals(BodyTypeEnum.POLYGON)) {
+        return Collisions.intersectPolygons(bodyA.getTransformVertices(), bodyB.getTransformVertices());
+      }
+    }
+
+    return new CollisionInfo();
   }
 
   /**

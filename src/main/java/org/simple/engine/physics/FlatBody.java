@@ -156,6 +156,11 @@ public class FlatBody {
     return this.transformVertices;
   }
 
+  public void step(double elapsedTime) {
+    this.position = FlatVector.add(this.position, FlatVector.multiply(this.linearVelocity, elapsedTime));
+    this.rotation += this.rotationVelocity * elapsedTime;
+  }
+
   public void move(FlatVector move)  {
     this.position = new FlatVector(this.position.x + move.x, this.position.y + move.y);
     this.transformUpdatedRequired = true;
