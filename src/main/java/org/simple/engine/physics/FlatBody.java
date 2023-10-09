@@ -23,6 +23,7 @@ public class FlatBody {
   private double rotationVelocity;
   private FlatVector[] transformVertices;
   private boolean transformUpdatedRequired;
+  private FlatVector force;
 
   // 不可变属性
   public final double mass;
@@ -40,9 +41,10 @@ public class FlatBody {
   private FlatBody(FlatVector position, double mass, double area, double density,
       double restitution, boolean isStatic, double radius, double width, double height, BodyTypeEnum bodyType) {
     this.position = position;
-    this.linearVelocity = FlatVector.Zero;
+    this.linearVelocity = FlatVector.ZERO;
     this.rotation = 0d;
     this.rotationVelocity = 0d;
+    this.force = FlatVector.ZERO;
 
     this.mass = mass;
     this.area = area;
@@ -157,8 +159,12 @@ public class FlatBody {
   }
 
   public void step(double elapsedTime) {
+    FlatVector acceleration = FlatVector.multiply(this.force, 1 / this.mass);
+    this.linearVelocity = FlatVector.add(this.linearVelocity, FlatVector.multiply(acceleration, elapsedTime));
+    this.force = FlatVector.ZERO;
     this.position = FlatVector.add(this.position, FlatVector.multiply(this.linearVelocity, elapsedTime));
     this.rotation += this.rotationVelocity * elapsedTime;
+
     this.transformUpdatedRequired = true;
   }
 
@@ -175,6 +181,10 @@ public class FlatBody {
   public void rotate(double angle) {
     this.rotation += angle;
     this.transformUpdatedRequired = true;
+  }
+
+  public void applyForce(FlatVector force) {
+    this.force = force;
   }
 
   // getter and setter

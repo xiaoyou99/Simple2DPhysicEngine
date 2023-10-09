@@ -13,6 +13,7 @@ import org.simple.engine.physics.collision.Collisions;
  */
 @Getter
 public class FlatWorld {
+
   // 属性: 刚体列表
   private List<FlatBody> bodies;
 
@@ -49,7 +50,7 @@ public class FlatWorld {
   /**
    * 更新物理世界
    *
-   * @param elapsedTime 经过的时间
+   * @param elapsedTime  经过的时间
    * @param maximumSteps 最多迭代多少步
    * @return step是否增加
    */
@@ -91,11 +92,47 @@ public class FlatWorld {
         if (!collisionInfo.isHasCollision()) {
           continue;
         }
-        FlatVector move = collisionInfo.getNormal().multiply(collisionInfo.getDepth() / 2);
-        bodyA.move(move.negative());
-        bodyB.move(move);
+        resolveCollision(bodyA, bodyB, collisionInfo.getNormal(), collisionInfo.getDepth());
       }
     }
+
+    // todo: delete 这里是测试封闭世界的代码，后续需要删除
+    double min = -50;
+    double max = 50;
+    for (int i = 0; i < bodies.size(); i++) {
+      FlatBody bodyA = bodies.get(i);
+      double offset = (max - min);
+      if (bodyA.getPosition().x < min) {
+        bodyA.setPosition(FlatVector.add(bodyA.getPosition(), new FlatVector(offset, 0)));
+      }
+      if (bodyA.getPosition().x > max) {
+        bodyA.setPosition(FlatVector.sub(bodyA.getPosition(), new FlatVector(offset, 0)));
+      }
+      if (bodyA.getPosition().y < min) {
+        bodyA.setPosition(FlatVector.add(bodyA.getPosition(), new FlatVector(0, offset)));
+      }
+      if (bodyA.getPosition().y > max) {
+        bodyA.setPosition(FlatVector.sub(bodyA.getPosition(), new FlatVector(0, offset)));
+      }
+    }
+  }
+
+  private void resolveCollision(FlatBody bodyA, FlatBody bodyB, FlatVector normal, double depth) {
+    // 刚体不可重叠
+    bodyA.move(FlatVector.multiply(normal.negative(), depth / 2));
+    bodyB.move(FlatVector.multiply(normal, depth / 2));
+
+    // 计算冲量
+    double e = Math.min(bodyA.restitution, bodyB.restitution);
+    FlatVector vAB = FlatVector.sub(bodyB.getLinearVelocity(), bodyA.getLinearVelocity());
+    double j = -(1 + e) * FlatMath.dot(vAB, normal);
+    j /= ((1 / bodyA.mass) + (1 / bodyB.mass));
+
+    FlatVector dvA = FlatVector.multiply(normal.negative(), j / bodyA.mass);
+    FlatVector dvB = FlatVector.multiply(normal, j / bodyB.mass);
+    bodyA.setLinearVelocity(FlatVector.add(bodyA.getLinearVelocity(), dvA));
+    bodyB.setLinearVelocity(FlatVector.add(bodyB.getLinearVelocity(), dvB));
+
   }
 
   // 碰撞检测：返回的法线方向，整体是由A指向B的
@@ -103,11 +140,13 @@ public class FlatWorld {
     if (bodyA.bodyType.equals(BodyTypeEnum.CIRCLE)) {
       // circle-polygon
       if (bodyB.bodyType.equals(BodyTypeEnum.BOX) || bodyB.bodyType.equals(BodyTypeEnum.POLYGON)) {
-        return Collisions.intersectCirclePolygon(bodyA.getPosition(), bodyA.radius, bodyB.getTransformVertices());
+        return Collisions.intersectCirclePolygon(bodyA.getPosition(), bodyA.radius,
+            bodyB.getTransformVertices());
       }
       // circle-circle
       if (bodyB.bodyType.equals(BodyTypeEnum.CIRCLE)) {
-        return Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius, bodyB.getPosition(), bodyB.radius);
+        return Collisions.intersectCircles(bodyA.getPosition(), bodyA.radius, bodyB.getPosition(),
+            bodyB.radius);
       }
     }
 
@@ -126,7 +165,8 @@ public class FlatWorld {
       }
       // polygon-polygon
       if (bodyB.bodyType.equals(BodyTypeEnum.BOX) || bodyB.bodyType.equals(BodyTypeEnum.POLYGON)) {
-        return Collisions.intersectPolygons(bodyA.getTransformVertices(), bodyB.getTransformVertices());
+        return Collisions.intersectPolygons(bodyA.getTransformVertices(),
+            bodyB.getTransformVertices());
       }
     }
 

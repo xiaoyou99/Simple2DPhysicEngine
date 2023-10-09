@@ -30,4 +30,15 @@ public class RandomUtil {
   public static double randomDouble(double min, double max) {
     return random.nextDouble() * (max - min) + min;
   }
+
+  /**
+   * 获取[min, max] 之间的一个随机整数
+   *
+   * @param min 最小值
+   * @param max 最大值
+   * @return 随机整数
+   */
+  public static int randomInt(int min, int max) {
+    return random.nextInt(max - min + 1) + min;
+  }
 }

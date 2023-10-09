@@ -12,11 +12,17 @@ import org.simple.engine.physics.FlatWorld;
  * @since 2023/10/07
  */
 public class KeyboardMovingInputHandler extends AbstractKeyboardInputHandler {
+  private static final double FORCE_MAGNITUDE = 64;
+
   private FlatWorld flatWorld;
+  private double dx;
+  private double dy;
 
   public KeyboardMovingInputHandler(Component component, FlatWorld flatWorld) {
     super(component);
     this.flatWorld = flatWorld;
+    this.dx = 0;
+    this.dy = 0;
   }
 
   protected void onKeyPressed(KeyEvent e) {
@@ -29,23 +35,33 @@ public class KeyboardMovingInputHandler extends AbstractKeyboardInputHandler {
       return;
     }
     FlatBody body = flatWorld.getBodies().get(0);
-    double amount = 0.2;
     switch (keyCode) {
       case KeyEvent.VK_LEFT:
-        body.move(FlatVector.multiply(new FlatVector(-1, 0), amount));
+        dx--;
         break;
       case KeyEvent.VK_RIGHT:
-        body.move(FlatVector.multiply(new FlatVector(1, 0), amount));
+        dx++;
         break;
       case KeyEvent.VK_UP:
-        body.move(FlatVector.multiply(new FlatVector(0, 1), amount));
+        dy++;
         break;
       case KeyEvent.VK_DOWN:
-        body.move(FlatVector.multiply(new FlatVector(0, -1), amount));
+        dy--;
         break;
       default:
         break;
     }
+    if (Math.abs(dx) > 0.0001 || Math.abs(dy) > 0.0001) {
+      applyForceToBody(body);
+    }
+    dx = 0;
+    dy = 0;
+  }
+
+  private void applyForceToBody(FlatBody body) {
+    FlatVector forceDirection = new FlatVector(dx, dy);
+    FlatVector force = FlatVector.multiply(forceDirection, FORCE_MAGNITUDE);
+    body.applyForce(force);
   }
 
   private boolean isDirectionKey(int keyCode) {

@@ -45,8 +45,8 @@ public class Collisions {
     // 以垂直于A的边的方向作为投影方向
     for (int i = 0; i < verticesA.length; i++) {
       FlatVector edge = FlatVector.sub(verticesA[(i + 1) % verticesA.length], verticesA[i]);
-      // 顺时针旋转90度。不进行normalize
-      FlatVector axis = new FlatVector(-edge.y, edge.x);
+      // 顺时针旋转90度,并normalize
+      FlatVector axis = FlatMath.normalize(new FlatVector(-edge.y, edge.x));
       // 向法线方向投影
       double[] projectionA = projection(verticesA, axis);
       double[] projectionB = projection(verticesB, axis);
@@ -65,7 +65,7 @@ public class Collisions {
     // 重复上面的操作，但是需要以垂直于B的边的方向作为投影方向
     for (int i = 0; i < verticesB.length; i++) {
       FlatVector edge = FlatVector.sub(verticesB[i], verticesB[(i + 1) % verticesB.length]);
-      FlatVector axis = new FlatVector(-edge.y, edge.x);
+      FlatVector axis = FlatMath.normalize(new FlatVector(-edge.y, edge.x));
 
       double[] projectionA = projection(verticesA, axis);
       double[] projectionB = projection(verticesB, axis);
@@ -80,9 +80,6 @@ public class Collisions {
       }
     }
 
-    // 由于之前没有对axis做normalize，这里需要做normalize处理
-    depth /= FlatVector.length(normal);
-    normal = FlatMath.normalize(normal);
     // 这里指定发现方向，整体趋势是A指向B
     FlatVector centerA = findArithmeticMean(verticesA);
     FlatVector centerB = findArithmeticMean(verticesB);
@@ -107,8 +104,8 @@ public class Collisions {
     // 以垂直于多边形的边的方向作为投影方向
     for (int i = 0; i < vertices.length; i++) {
       FlatVector edge = FlatVector.sub(vertices[(i + 1) % vertices.length], vertices[i]);
-      // 顺时针旋转90度。不进行normalize
-      FlatVector axis = new FlatVector(-edge.y, edge.x);
+      // 顺时针旋转90度, 并normalize
+      FlatVector axis = FlatMath.normalize(new FlatVector(-edge.y, edge.x));
       // 向法线方向投影
       double[] projPolygon = projection(vertices, axis);
       double[] projCircle = projPolygonCircleToAxis(center, radius, axis);
@@ -126,7 +123,7 @@ public class Collisions {
 
     // 还需要一条轴作为投影方向，这条轴的方向是[圆心]和[距离圆形最近的一个多边形顶点]的连线防线
     int vertexIndex = getClosestVertexIndexFromPoint(center, vertices);
-    FlatVector axis = FlatVector.sub(vertices[vertexIndex], center);
+    FlatVector axis = FlatMath.normalize(FlatVector.sub(vertices[vertexIndex], center));
     // 向法线方向投影
     double[] projPolygon = projection(vertices, axis);
     double[] projCircle = projPolygonCircleToAxis(center, radius, axis);
@@ -141,9 +138,6 @@ public class Collisions {
       normal = axis;
     }
 
-    // 由于之前没有对axis做normalize，这里需要做normalize处理
-    depth /= FlatVector.length(normal);
-    normal = FlatMath.normalize(normal);
     // 这里指定法线方向，整体趋势是由圆指向多边形
     FlatVector centerPolygon = findArithmeticMean(vertices);
     FlatVector direction = FlatVector.sub(centerPolygon, center);

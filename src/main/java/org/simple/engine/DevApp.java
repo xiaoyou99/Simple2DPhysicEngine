@@ -54,21 +54,37 @@ public class DevApp {
     Camera camera = new Camera(15.0, 0, 0);
     FlatWorld flatWorld = new FlatWorld();
 
-    double min = -10d;
-    double max = 10d;
-    for (int i = 0; i < 10; i++) {
-      FlatVector position = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
-      double radius = RandomUtil.randomDouble(2d, 3d);
-      FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.2d, false, radius);
-      flatWorld.addBody(circleBody);
+    double min = -30d;
+    double max = 30d;
+//    for (int i = 0; i < 1; i++) {
+//      FlatVector position = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
+//      double radius = RandomUtil.randomDouble(2d, 3d);
+//      FlatBody circleBody = FlatBody.createCircleBody(position, 1.2d, 0.4d, false, radius);
+//      flatWorld.addBody(circleBody);
+//
+//
+//      FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
+//      double radius2 = RandomUtil.randomDouble(2d, 3d);
+//      FlatBody circleBody2 = FlatBody.createCircleBody(position2, 1.2d, 0.4d, false, radius);
+//      flatWorld.addBody(circleBody2);
+//
+//      FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
+//      double width = RandomUtil.randomDouble(2d, 3d);
+//      double height = RandomUtil.randomDouble(3d, 4d);
+//      FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.4d, false, width, height);
+////      boxBody.rotate(Math.PI * RandomUtil.randomDouble(0, 2d));
+////      boxBody.setRotationVelocity(RandomUtil.randomDouble(Math.PI / 3, Math.PI / 2));
+//      flatWorld.addBody(boxBody);
+//    }
 
-      FlatVector position2 = new FlatVector(RandomUtil.randomDouble(min, max), RandomUtil.randomDouble(min, max));
-      double width = RandomUtil.randomDouble(2d, 3d);
-      double height = RandomUtil.randomDouble(3d, 4d);
-      FlatBody boxBody = FlatBody.createBoxBody(position2, 1.2d, 0.2d, false, width, height);
-      boxBody.rotate(Math.PI * RandomUtil.randomDouble(0, 2d));
-      boxBody.setRotationVelocity(RandomUtil.randomDouble(Math.PI / 3, Math.PI / 2));
-      flatWorld.addBody(boxBody);
+    for(int i = 0; i < 4; i ++) {
+      double minX = i * 15 - 30;
+      double maxX = (i + 1) * 15 - 30;
+      for(int j = 0; j < 4; j++) {
+        double minY = j * 15 - 30;
+        double maxY = (j + 1) * 15 - 30;
+        addRandomBody(flatWorld, minX, maxX, minY, maxY, RandomUtil.randomDouble(2,5));
+      }
     }
 
     // 初始化Frame
@@ -77,6 +93,22 @@ public class DevApp {
       simulationFrame.getSimulationPanel().addSimulationBody(new SimulationBody(RandomUtil.getRandomColor(), body));
     }
     simulationFrame.start();
+  }
+
+  private static void addRandomBody(FlatWorld world, double minX, double maxX, double minY, double maxY, double radiusOrWidth) {
+    FlatVector position = new FlatVector(RandomUtil.randomDouble(minX + radiusOrWidth, maxX - radiusOrWidth),
+        RandomUtil.randomDouble(minY + radiusOrWidth, maxY - radiusOrWidth));
+    double restitution = 0.4d;
+    FlatBody body;
+    if (RandomUtil.randomInt(1, 2) == 1) {
+      body = FlatBody.createCircleBody(position, 1.2d, restitution, false, RandomUtil.randomDouble(3 * radiusOrWidth / 4, radiusOrWidth));
+    } else {
+      body = FlatBody.createBoxBody(position, 1.2d, restitution, false,
+          RandomUtil.randomDouble(3 * radiusOrWidth / 4, radiusOrWidth),
+          RandomUtil.randomDouble(3 * radiusOrWidth / 4, radiusOrWidth));
+    }
+    body.setLinearVelocity(new FlatVector(RandomUtil.randomDouble(-5, 10), RandomUtil.randomDouble(-2, 10)));
+    world.addBody(body);
   }
 
   /**
